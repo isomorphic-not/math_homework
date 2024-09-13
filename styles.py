@@ -9,7 +9,7 @@ main_style = """
                        color: #ffffff;
                        font-family: "Consolas", Courier, monospace;                   }
                    QLabel {
-                       font-size: 18px;
+                       font-size: 12px;
                        color: #ffffff;  /* White text */
                        font-family: "Consolas", Courier, monospace;                  }
                    }
