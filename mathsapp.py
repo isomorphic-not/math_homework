@@ -2,6 +2,7 @@ import random
 import typing
 
 import numpy
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QComboBox,
     QHBoxLayout,
@@ -9,7 +10,6 @@ from PyQt5.QtWidgets import (
     QLineEdit,
     QMainWindow,
     QPushButton,
-    QSpinBox,
     QTextEdit,
     QVBoxLayout,
     QWidget,
@@ -45,26 +45,37 @@ class MathScratchPadApp(QMainWindow):
         self.submit_button = QPushButton("Submit")
         self.submit_button.clicked.connect(self.check_answer)
 
-        self.num_problems_spinbox = QSpinBox()
-        self.num_problems_spinbox.setRange(1, 15)
-        self.num_problems_spinbox.setValue(self.num_problems)
-        self.num_problems_spinbox.valueChanged.connect(self.update_num_problems)
+        self.num_problems_spinbox = QComboBox()
+        self.num_problems_spinbox.addItems([str(num) for num in list(range(1, 26))])
+        self.num_problems_spinbox.setCurrentText("10")
+        self.num_problems_spinbox.currentTextChanged.connect(self.update_num_problems)
 
-        self.digits_spinbox = QSpinBox()
-        self.digits_spinbox.setRange(1, 5)
-        self.digits_spinbox.setValue(self.digits)
-        self.digits_spinbox.valueChanged.connect(self.update_digits)
+        self.digits_spinbox = QComboBox()
+        self.digits_spinbox.addItems([str(num) for num in list(range(1, 11))])
+        self.digits_spinbox.setCurrentText("2")
+        self.digits_spinbox.currentTextChanged.connect(self.update_digits)
 
         self.operation_combobox = QComboBox()
         self.operation_combobox.addItems(list(operations_map.keys()))
         self.operation_combobox.currentTextChanged.connect(self.update_operation)
 
-        settings_layout = QVBoxLayout()
-        settings_layout.addWidget(QLabel("Number of Problems:"))
+        settings_layout = QHBoxLayout()
+
+        total_layout = QLabel("Total")
+        total_layout.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+
+        settings_layout.addWidget(total_layout)
         settings_layout.addWidget(self.num_problems_spinbox)
-        settings_layout.addWidget(QLabel("Number of Digits:"))
+
+        digits_layout = QLabel("Digits")
+        digits_layout.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+
+        settings_layout.addWidget(digits_layout)
         settings_layout.addWidget(self.digits_spinbox)
-        settings_layout.addWidget(QLabel("Operation:"))
+
+        operation_layout = QLabel("Operation")
+        operation_layout.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        settings_layout.addWidget(operation_layout)
         settings_layout.addWidget(self.operation_combobox)
 
         answer_layout = QHBoxLayout()
@@ -134,17 +145,18 @@ class MathScratchPadApp(QMainWindow):
         self.answer_input.clear()
         self.answer_input.setFocus()
 
-    def update_num_problems(self, value: int) -> None:
-        self.num_problems = value
+    def reset(self) -> None:
         self.total_correct = 0
         self.update_math_problem()
 
-    def update_digits(self, value: int) -> None:
-        self.digits = value
-        self.total_correct = 0
-        self.update_math_problem()
+    def update_num_problems(self, value: str) -> None:
+        self.num_problems = int(value)
+        self.reset()
+
+    def update_digits(self, value: str) -> None:
+        self.digits = int(value)
+        self.reset()
 
     def update_operation(self, text: str) -> None:
         self.operation = operations_map[text]
-        self.total_correct = 0
-        self.update_math_problem()
+        self.reset()
